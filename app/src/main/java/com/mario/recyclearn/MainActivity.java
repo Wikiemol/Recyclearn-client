@@ -3,6 +3,7 @@ package com.mario.recyclearn;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -94,7 +96,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setPic() {
-        
+//        File file = new File(mCurrentPhotoPath.substring(5));
+        File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES + "/" + mCurrentPhotoPath.substring(5));
+
+        Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
+        mImageView.setImageBitmap(bitmap);
     }
 
     private void galleryAddPic() {
