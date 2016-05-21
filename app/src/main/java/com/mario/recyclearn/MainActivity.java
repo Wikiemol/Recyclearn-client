@@ -1,10 +1,13 @@
 package com.mario.recyclearn;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -22,9 +25,16 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,9 +48,12 @@ public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private String imageDirectory = Environment.getExternalStorageDirectory() + "/Recyclearn";
     private String mCurrentPhotoPath;
-    private ImageView mImageView;
     private Bitmap mBitmap;
     private ProgressBar mProgressBar;
+    private View rootLayout;
+    private Drawable background;
+    private FloatingActionButton cameraButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,13 +64,18 @@ public class MainActivity extends AppCompatActivity {
 
         }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        rootLayout = findViewById(R.id.backgroundView);
+        background = getDrawable(R.drawable.android_leaf_dark);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton cameraButton = (FloatingActionButton) findViewById(R.id.fab);
-        mImageView = (ImageView)findViewById(R.id.image_view_1);
-        if(mBitmap != null) {
-            mImageView.setImageBitmap(mBitmap);
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
         }
+        ft.addToBackStack(null);
+        cameraButton = (FloatingActionButton) findViewById(R.id.fab);
+
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -115,26 +133,35 @@ public class MainActivity extends AppCompatActivity {
         progress.setTitle("Loading");
         progress.setMessage("Wait while loading recycling information...");
         progress.show();
-        AsyncTask<Void, Void, String> worker = new AsyncTask<Void, Void, String>() {
+        AsyncTask<Void, Void, JSONObject> worker = new AsyncTask<Void, Void, JSONObject>() {
             @Override
-            protected String doInBackground(Void... params) {
-                String result = "";
+            protected JSONObject doInBackground(Void... params) {
+                JSONObject json = null;
+                String result = null;
                 ImageService service = new ImageService();
                 try {
                     result = service.sendBitmap(mBitmap);
+
+                    json = new JSONObject(result);
 
                 } catch (Exception ex) {
                     Log.d(TAG, result);
                     ex.printStackTrace();
                 }
-                return result;
+                return json;
             }
 
             @Override
-            protected void onPostExecute(String result) {
+            protected void onPostExecute(JSONObject result) {
 
-                Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
-                Log.i("Mystuff", result);
+                rootLayout.setAlpha(0.3f);
+                background.setAlpha(190);
+                cameraButton.setAlpha(0.f);
+                Log.i(TAG, result.toString());
+                CheckMark checkMark = new CheckMark();
+                checkMark.show(getFragmentManager(), "dialog");
+
+
                 progress.dismiss();
             }
         };
@@ -156,7 +183,6 @@ public class MainActivity extends AppCompatActivity {
             if(data != null) {
                 Bundle extras = data.getExtras();
                 mBitmap = (Bitmap) extras.get("data");
-                mImageView.setImageBitmap(mBitmap);
                 sendImage();
             }
         }
@@ -171,7 +197,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRestoreInstanceState(Bundle inState) {
         mBitmap = inState.getParcelable("bitmapimage");
-        mImageView.setImageBitmap(mBitmap);
     }
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -180,6 +205,12 @@ public class MainActivity extends AppCompatActivity {
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
         mCurrentPhotoPath = "file:" + image.getAbsolutePath();
         return image;
+    }
+
+    public void resetAlpha() {
+        rootLayout.setAlpha(1.0f);
+        background.setAlpha(255);
+        cameraButton.setAlpha(1.0f);
     }
 
 }

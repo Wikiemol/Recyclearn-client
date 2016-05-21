@@ -10,9 +10,10 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.mario.recyclearn.MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity_main"
+    android:id="@+id/backgroundView">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -24,7 +25,10 @@
             android:text="@string/thank_you_for_reducing_waste"
             android:id="@+id/textView2"
             android:layout_gravity="center_horizontal"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:layout_marginTop="81dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -34,21 +38,21 @@
             android:id="@+id/textView"
             android:layout_gravity="center"
             android:textColor="@android:color/white"
-            android:gravity="center" />
+            android:gravity="center"
+            android:layout_below="@+id/textView2"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="77dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="@string/safety_string"
             android:id="@+id/textView3"
-            android:layout_gravity="center"
-            android:textColor="@android:color/white" />
+            android:layout_below="@+id/textView"
+            android:layout_centerHorizontal="true"
+            android:textColor="@android:color/white"
+            android:paddingTop="25dp" />
 
-        <ImageView
-        android:id="@+id/image_view_1"
-        android:scaleType="fitXY"
-        android:layout_width="match_parent"
-        android:layout_height="487dp" />
-    </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>
