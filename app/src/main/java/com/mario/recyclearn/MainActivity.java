@@ -88,8 +88,13 @@ public class MainActivity extends AppCompatActivity {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 galleryAddPic();
+                setPic();
             }
         }
+    }
+
+    private void setPic() {
+        
     }
 
     private void galleryAddPic() {
