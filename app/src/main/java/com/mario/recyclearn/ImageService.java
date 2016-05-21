@@ -32,10 +32,14 @@ public class ImageService {
         try {
             httpConn = (HttpURLConnection) url.openConnection();
             httpConn.setRequestMethod("POST");
+            httpConn.setDoOutput(true);
         } catch (Exception e) {
             return null;
         }
 
+        if(image == null) {
+            return "";
+        }
         OutputStream output = httpConn.getOutputStream();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
@@ -43,7 +47,7 @@ public class ImageService {
         String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("imageType", "jpeg");
+            jsonObject.put("imageType", "jpg");
             jsonObject.put("base64Data", encodedImage);
         } catch (JSONException e) {
             Log.e("TAG", e.toString());

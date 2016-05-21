@@ -97,8 +97,8 @@ public class MainActivity extends AppCompatActivity {
 
             if(photoFile != null) {
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                galleryAddPic();
-                sendImage();
+//                sendImage();
+//                galleryAddPic();
             }
         }
     }
@@ -121,6 +121,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(String result) {
                 //don't know
+                Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
+
             }
         };
         worker.execute();
@@ -141,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 Bundle extras = data.getExtras();
                 mBitmap = (Bitmap) extras.get("data");
                 mImageView.setImageBitmap(mBitmap);
+                sendImage();
             }
         }
     }
