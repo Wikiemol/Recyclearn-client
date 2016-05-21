@@ -3,6 +3,7 @@ package com.mario.recyclearn;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -19,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,26 +34,33 @@ public class MainActivity extends AppCompatActivity {
     private String imageDirectory = Environment.getExternalStorageDirectory() + "/Recyclearn";
     private String mCurrentPhotoPath;
     private ImageView mImageView;
+    private Bitmap mBitmap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if(savedInstanceState == null) {
+            Intent intent = getIntent();
+
+        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         FloatingActionButton cameraButton = (FloatingActionButton) findViewById(R.id.fab);
         mImageView = (ImageView)findViewById(R.id.image_view_1);
+        if(mBitmap != null) {
+            mImageView.setImageBitmap(mBitmap);
+        }
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                takePicture();
+                dispatchTakePictureIntent();
             }
         });
     }
 
-    private void takePicture() {
-        dispatchTakePictureIntent();
-    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -85,16 +95,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if(photoFile != null) {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 galleryAddPic();
-                setPic();
             }
         }
-    }
-
-    private void setPic() {
-        
     }
 
     private void galleryAddPic() {
@@ -110,12 +114,23 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             if(data != null) {
                 Bundle extras = data.getExtras();
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
-                mImageView.setImageBitmap(imageBitmap);
+                mBitmap = (Bitmap) extras.get("data");
+                mImageView.setImageBitmap(mBitmap);
             }
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable("bitmapimage", mBitmap);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle inState) {
+        mBitmap = inState.getParcelable("bitmapimage");
+        mImageView.setImageBitmap(mBitmap);
+    }
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
