@@ -7,8 +7,11 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -32,7 +35,9 @@ public class ImageService {
         try {
             httpConn = (HttpURLConnection) url.openConnection();
             httpConn.setRequestMethod("POST");
+            httpConn.setDoInput(true);
             httpConn.setDoOutput(true);
+            httpConn.setRequestProperty("Content-Type", "application/json");
         } catch (Exception e) {
             return null;
         }
@@ -44,7 +49,8 @@ public class ImageService {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
-        String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        String encodedImage = Base64.encodeToString(byteArray, Base64.NO_WRAP);
+        byte[] result = Base64.decode(encodedImage, Base64.NO_WRAP);
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("imageType", "jpg");
@@ -53,13 +59,26 @@ public class ImageService {
             Log.e("TAG", e.toString());
         }
 
+        Log.i("Mystuff", encodedImage);
         output.write(jsonObject.toString().getBytes());
         output.flush();
         output.close();
-        httpConn.connect();
-        String response = httpConn.getResponseMessage();
+
+        InputStream in;
+        try {
+            in = httpConn.getInputStream();
+        } catch (Exception ex) {
+            in = httpConn.getErrorStream();
+        }
+        BufferedReader rd = new BufferedReader(new InputStreamReader(in));
+        StringBuffer response = new StringBuffer();
+        String line;
+        while((line = rd.readLine()) != null) {
+            response.append(line);
+            response.append("\n");
+        }
         httpConn.disconnect();
-        return response;
+        return response.toString();
     }
 
 }

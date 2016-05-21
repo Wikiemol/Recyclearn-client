@@ -97,8 +97,6 @@ public class MainActivity extends AppCompatActivity {
 
             if(photoFile != null) {
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-//                sendImage();
-//                galleryAddPic();
             }
         }
     }
