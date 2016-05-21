@@ -13,6 +13,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import io.particle.android.sdk.cloud.ParticleCloud;
+import io.particle.android.sdk.cloud.ParticleCloudException;
+import io.particle.android.sdk.cloud.ParticleCloudSDK;
+import io.particle.android.sdk.cloud.ParticleDevice;
 
 /**
  *
@@ -85,6 +92,23 @@ public class ImageService {
         }
         httpConn.disconnect();
         return response.toString();
+    }
+
+    public void toggleServo(String command)  {
+        try {
+            ParticleCloudSDK.getCloud().logIn("kingweko@gmail.com", "!qAzXsW2");
+            List<ParticleDevice> particleDevices = ParticleCloudSDK.getCloud().getDevices();
+            for (ParticleDevice device : particleDevices) {
+                if (device.getName().equals("Recyclearn")) {
+                    List<String> args = new ArrayList<>();
+                    args.add(command);
+                    device.callFunction("rotate", args);
+                }
+            }
+        } catch (Exception e) {
+            Log.e(MainActivity.TAG, e.getMessage());
+        }
+
     }
 
 }

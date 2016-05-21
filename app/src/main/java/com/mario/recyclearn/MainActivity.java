@@ -41,9 +41,11 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import io.particle.android.sdk.cloud.ParticleCloudSDK;
+
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    public static final String TAG = MainActivity.class.getSimpleName();
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private String imageDirectory = Environment.getExternalStorageDirectory() + "/Recyclearn";
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        ParticleCloudSDK.init(this.getApplicationContext());
         if(savedInstanceState == null) {
             Intent intent = getIntent();
 
@@ -143,7 +145,12 @@ public class MainActivity extends AppCompatActivity {
                     result = service.sendBitmap(mBitmap);
 
                     json = new JSONObject(result);
-
+                    Boolean recyclable = json.getBoolean("recycling");
+                    if (recyclable) {
+                        service.toggleServo("left");
+                    } else {
+                        service.toggleServo("right");
+                    }
                 } catch (Exception ex) {
                     Log.d(TAG, result);
                     ex.printStackTrace();
