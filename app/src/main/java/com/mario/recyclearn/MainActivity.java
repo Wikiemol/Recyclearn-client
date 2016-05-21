@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -91,16 +92,40 @@ public class MainActivity extends AppCompatActivity {
             try {
                 photoFile = createImageFile();
             } catch (Exception ex) {
-
+                ex.printStackTrace();
             }
 
             if(photoFile != null) {
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 galleryAddPic();
+                sendImage();
             }
         }
     }
 
+    private void sendImage() {
+        AsyncTask<Void, Void, String> worker = new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String result = "";
+                ImageService service = new ImageService();
+                try {
+                    result = service.sendBitmap(mBitmap);
+                    Log.i("Mystuff", result);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                return result;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                //don't know
+            }
+        };
+        worker.execute();
+
+    }
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
