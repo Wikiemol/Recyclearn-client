@@ -3,10 +3,8 @@ package com.mario.recyclearn;
 import android.graphics.Bitmap;
 import android.util.Base64;
 import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,9 +15,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
+ *
  * Created by williamoliver on 5/21/16.
+ *
  */
 public class ImageService {
+
+    private static final String TAG = ImageService.class.getSimpleName();
+
     private URL url;
     public ImageService () {
         try {
@@ -35,6 +38,7 @@ public class ImageService {
         try {
             httpConn = (HttpURLConnection) url.openConnection();
             httpConn.setRequestMethod("POST");
+            httpConn.setConnectTimeout(1000);
             httpConn.setDoInput(true);
             httpConn.setDoOutput(true);
             httpConn.setRequestProperty("Content-Type", "application/json");
@@ -56,20 +60,22 @@ public class ImageService {
             jsonObject.put("imageType", "jpg");
             jsonObject.put("base64Data", encodedImage);
         } catch (JSONException e) {
-            Log.e("TAG", e.toString());
+            Log.e(TAG, e.toString());
         }
 
-        Log.i("Mystuff", encodedImage);
+        Log.d(TAG, encodedImage);
         output.write(jsonObject.toString().getBytes());
         output.flush();
         output.close();
 
         InputStream in;
+
         try {
             in = httpConn.getInputStream();
         } catch (Exception ex) {
             in = httpConn.getErrorStream();
         }
+
         BufferedReader rd = new BufferedReader(new InputStreamReader(in));
         StringBuffer response = new StringBuffer();
         String line;

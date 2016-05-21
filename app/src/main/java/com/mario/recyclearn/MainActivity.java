@@ -31,6 +31,8 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private String imageDirectory = Environment.getExternalStorageDirectory() + "/Recyclearn";
     private String mCurrentPhotoPath;
@@ -86,11 +88,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
 
             File photoFile = null;
+
             try {
                 photoFile = createImageFile();
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -102,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendImage() {
+
         AsyncTask<Void, Void, String> worker = new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
@@ -109,8 +115,9 @@ public class MainActivity extends AppCompatActivity {
                 ImageService service = new ImageService();
                 try {
                     result = service.sendBitmap(mBitmap);
-                    Log.i("Mystuff", result);
+
                 } catch (Exception ex) {
+                    Log.d(TAG, result);
                     ex.printStackTrace();
                 }
                 return result;
@@ -118,9 +125,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected void onPostExecute(String result) {
-                //don't know
-                Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
 
+                Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
             }
         };
         worker.execute();
