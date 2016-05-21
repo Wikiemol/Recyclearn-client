@@ -135,10 +135,11 @@ public class MainActivity extends AppCompatActivity {
 
                 Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
                 Log.i("Mystuff", result);
+                progress.dismiss();
             }
         };
         worker.execute();
-//        progress.dismiss();
+
 
     }
     private void galleryAddPic() {

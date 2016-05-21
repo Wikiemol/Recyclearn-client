@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Recyclearn</string>
     <string name="action_settings">Settings</string>
+    <string name="please_take_a_photo_of_your_trash">Please take a photo of your trash</string>
+    <string name="safety_string">We\'ll let you know if it is safe to recycle</string>
+    <string name="thank_you_for_reducing_waste">Thank you for reducing waste</string>
 </resources>
