@@ -1,5 +1,6 @@
 package com.mario.recyclearn;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -22,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.File;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private String mCurrentPhotoPath;
     private ImageView mImageView;
     private Bitmap mBitmap;
+    private ProgressBar mProgressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,6 +111,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendImage() {
 
+        final ProgressDialog progress = new ProgressDialog(this);
+        progress.setTitle("Loading");
+        progress.setMessage("Wait while loading recycling information...");
+        progress.show();
         AsyncTask<Void, Void, String> worker = new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
@@ -127,9 +134,11 @@ public class MainActivity extends AppCompatActivity {
             protected void onPostExecute(String result) {
 
                 Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
+                Log.i("Mystuff", result);
             }
         };
         worker.execute();
+//        progress.dismiss();
 
     }
     private void galleryAddPic() {

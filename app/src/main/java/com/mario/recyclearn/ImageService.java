@@ -26,7 +26,7 @@ public class ImageService {
     private URL url;
     public ImageService () {
         try {
-            url = new URL("http://172.20.10.2:8080/isRecycling");
+            url = new URL("http://ucfpkmn.com:8080/isRecycling");
         } catch (Exception e) {
 
         }
@@ -38,7 +38,7 @@ public class ImageService {
         try {
             httpConn = (HttpURLConnection) url.openConnection();
             httpConn.setRequestMethod("POST");
-            httpConn.setConnectTimeout(1000);
+//            httpConn.setConnectTimeout(5000);
             httpConn.setDoInput(true);
             httpConn.setDoOutput(true);
             httpConn.setRequestProperty("Content-Type", "application/json");
