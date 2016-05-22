@@ -34,12 +34,16 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import io.particle.android.sdk.cloud.ParticleCloudSDK;
 
@@ -145,12 +149,16 @@ public class MainActivity extends AppCompatActivity {
                     result = service.sendBitmap(mBitmap);
 
                     json = new JSONObject(result);
+
                     Boolean recyclable = json.getBoolean("recycling");
+
                     if (recyclable) {
                         service.toggleServo("left");
                     } else {
                         service.toggleServo("right");
                     }
+                    service.toggleServo("middle");
+
                 } catch (Exception ex) {
                     Log.d(TAG, result);
                     ex.printStackTrace();
@@ -165,7 +173,8 @@ public class MainActivity extends AppCompatActivity {
                 background.setAlpha(190);
                 cameraButton.setAlpha(0.f);
                 Log.i(TAG, result.toString());
-                CheckMark checkMark = new CheckMark();
+
+                CheckMark checkMark = CheckMark.newInstance(result);
                 checkMark.show(getFragmentManager(), "dialog");
 
 

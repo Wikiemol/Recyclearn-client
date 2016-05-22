@@ -10,8 +10,13 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by williamoliver on 5/21/16.
@@ -21,7 +26,8 @@ public class CheckMark extends DialogFragment {
     private JSONObject results = null;
     private Button yesButton;
     private Button noButton;
-
+    private TextView questionText;
+    private final List<String> hints = new ArrayList<>();
     public CheckMark() {
         setStyle(STYLE_NO_FRAME, 0);
     }
@@ -30,6 +36,17 @@ public class CheckMark extends DialogFragment {
 
         CheckMark c = new CheckMark();
         c.results = results;
+        JSONArray array = null;
+
+        try {
+            array = results.getJSONArray("hints");
+            for (int i = 0; i < array.length(); i++) {
+                c.hints.add(array.getString(i));
+            }
+        } catch (Exception e) {
+            Log.e(MainActivity.TAG, e.getMessage());
+            Log.e(MainActivity.TAG, e.getStackTrace().toString());
+        }
         return c;
     }
 
@@ -48,6 +65,14 @@ public class CheckMark extends DialogFragment {
         View v = inflater.inflate(R.layout.check_mark, container, false);
         yesButton = (Button) v.findViewById(R.id.yesButton);
         noButton = (Button) v.findViewById(R.id.cancel);
+        questionText = (TextView) v.findViewById(R.id.questionText);
+
+        StringBuilder text = new StringBuilder("");
+        for (String hint : hints) {
+            text.append(hint + "\n");
+        }
+
+        questionText.setText(text.toString());
 
         yesButton.setOnClickListener(new View.OnClickListener() {
             @Override
