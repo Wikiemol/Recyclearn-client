@@ -147,15 +147,15 @@ public class MainActivity extends AppCompatActivity {
                 ImageService service = new ImageService();
                 try {
                     result = service.sendBitmap(mBitmap);
+                    if (!result.isEmpty()) {
+                        json = new JSONObject(result);
 
-                    json = new JSONObject(result);
-
-                    Boolean recyclable = json.getBoolean("recycling");
-
-                    if (recyclable) {
-                        service.toggleServo("left");
-                    } else {
-                        service.toggleServo("right");
+                        Boolean recyclable = json.getBoolean("recycling");
+                        if (recyclable) {
+                            service.toggleServo("left");
+                        } else {
+                            service.toggleServo("right");
+                        }
                     }
                     service.toggleServo("middle");
 
@@ -168,7 +168,16 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected void onPostExecute(JSONObject result) {
-
+                if (result == null) {
+                    result = new JSONObject();
+                    try {
+                        result.put("error", true);
+                        result.put("recycling", false);
+                        result.put("hints", new JSONArray(new Object[]{"There was an error with the server, please try again later."}));
+                    } catch (Exception e) {
+                        Log.e(TAG, e.toString());
+                    }
+                }
                 rootLayout.setAlpha(0.3f);
                 background.setAlpha(190);
                 cameraButton.setAlpha(0.f);

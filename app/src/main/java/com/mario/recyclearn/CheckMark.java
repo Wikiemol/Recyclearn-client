@@ -28,6 +28,7 @@ public class CheckMark extends DialogFragment {
     private Button noButton;
     private TextView questionText;
     private final List<String> hints = new ArrayList<>();
+    private boolean errored = false;
     public CheckMark() {
         setStyle(STYLE_NO_FRAME, 0);
     }
@@ -39,6 +40,9 @@ public class CheckMark extends DialogFragment {
         JSONArray array = null;
 
         try {
+            if (results.has("error")) {
+                c.errored = results.getBoolean("error");
+            }
             array = results.getJSONArray("hints");
             for (int i = 0; i < array.length(); i++) {
                 c.hints.add(array.getString(i));
@@ -94,6 +98,14 @@ public class CheckMark extends DialogFragment {
                 dismiss();
             }
         });
+
+        if (errored) {
+            noButton.setVisibility(View.GONE);
+            yesButton.setText("OK");
+        } else {
+            noButton.setVisibility(View.VISIBLE);
+            yesButton.setText("Yes");
+        }
 
         return v;
     }
